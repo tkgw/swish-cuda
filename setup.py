@@ -7,7 +7,7 @@ EXT_SRCS = [
 ]
 
 setup(
-    name='swish_torch',
+    name='swish_cuda',
     version='0.0.1',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -16,7 +16,7 @@ setup(
     install_requires=['torch>=1.2'],
     ext_modules=[
         CUDAExtension(
-            'swish_torch._C',
+            'swish_cuda._C',
             EXT_SRCS,
             extra_compile_args={
                 'cxx': [],

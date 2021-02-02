@@ -39,7 +39,7 @@ def test_input(request):
 
 
 def test_forward(test_input):
-    from swish_torch import swish_forward
+    from swish_cuda import swish_forward
     res = swish_forward(test_input)
     exp = swish_forward_pt(test_input)
     assert_allclose(res, exp)
@@ -54,7 +54,7 @@ def get_grads(inp):
 
 
 def test_backward(test_input):
-    from swish_torch import swish_backward
+    from swish_cuda import swish_backward
     x = test_input.requires_grad_()
     grad_out, exp = get_grads(test_input)
     res = swish_backward(test_input.detach(), grad_out)
@@ -62,7 +62,7 @@ def test_backward(test_input):
 
 
 def test_function(test_input):
-    from swish_torch import SwishFunction
+    from swish_cuda import SwishFunction
     x1, x2 = (test_input.clone().requires_grad_() for i in range(2))
 
     y1 = swish_forward_pt(x1)
@@ -76,7 +76,7 @@ def test_function(test_input):
 
 
 def test_module(test_input):
-    from swish_torch import Swish
+    from swish_cuda import Swish
     x1, x2 = (test_input.clone().requires_grad_() for i in range(2))
 
     m1 = SwishPT()
@@ -92,20 +92,20 @@ def test_module(test_input):
 
 
 def test_gradient():
-    from swish_torch import SwishFunction
+    from swish_cuda import SwishFunction
     inp = torch.randn(10, 10, dtype=torch.float64, requires_grad=True, device='cuda:0')
     assert torch.autograd.gradcheck(SwishFunction.apply, inp)
 
 
 # def test_gradgrad():
-#     from swish_torch import SwishFunction
+#     from swish_cuda import SwishFunction
 #     inp = torch.randn(10, 10, dtype=torch.float64, requires_grad=True, device='cuda:0')
 #     assert torch.autograd.gradgradcheck(SwishFunction.apply, inp)
 
 
 def test_overlapping():
     '''Test handling of overlapping output tensors'''
-    from swish_torch import swish_forward
+    from swish_cuda import swish_forward
     t = torch.randn(2, 10, device='cuda:0')
     t_o = t.as_strided((3, 10), (5, 1))  # OVerlapping
     t_c = t_o.contiguous()               # Contiguous
