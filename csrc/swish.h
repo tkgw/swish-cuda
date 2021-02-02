@@ -24,15 +24,15 @@ void swish_fwd_func(scalar_t &out, const scalar_t &inp) {
 template <typename scalar_t>
 GLOBAL_INLINE
 void swish_bwd_func(scalar_t &grad_inp, const scalar_t &inp, const scalar_t &grad_out) {
-  scalar_t grad;
   if (inp < 0) {
     const scalar_t e = exp(inp);
-    grad = (scalar_t(1.0) + inp / (scalar_t(1.0) + e)) * e / (scalar_t(1.0) + e);
+    const scalar_t ep1 = scalar_t(1.0) + e;
+    grad_inp = grad_out * (ep1 + inp) * e / (ep1 * ep1);
   } else {
     const scalar_t e = exp(-inp);
-    grad = (scalar_t(1.0) + inp * e / (scalar_t(1.0) + e)) / (scalar_t(1.0) + e);
+    const scalar_t ep1 = scalar_t(1.0) + e;
+    grad_inp = grad_out * (ep1 + inp * e) / (ep1 * ep1);
   }
-  grad_inp = grad_out * grad;
 };
 
 // Specialisations for Half to calculate as float
