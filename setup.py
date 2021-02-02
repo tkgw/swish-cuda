@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from torch.utils.cpp_extension import BuildExtension, CUDAExtension
+from torch.utils.cpp_extension import BuildExtension, CUDAExtension, include_paths
 
 EXT_SRCS = [
     'csrc/swish.cpp',
@@ -22,9 +22,10 @@ setup(
                 'cxx': [],
                 'nvcc': ['--expt-extended-lambda']
             },
-            include_dirs=['external']
+            include_dirs=include_paths(cuda=True)
         )
     ],
     cmdclass={
         'build_ext': BuildExtension
-})
+    }
+)

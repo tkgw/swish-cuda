@@ -13,14 +13,25 @@
 template <typename scalar_t>
 GLOBAL_INLINE
 void swish_fwd_func(scalar_t &out, const scalar_t &inp) {
-  out = inp / (scalar_t(1.0) + exp(-inp));
+  if (inp < 0) {
+    const scalar_t e = exp(inp);
+    out = inp * e / (scalar_t(1.0) + e);
+  } else {
+    out = inp / (scalar_t(1.0) + exp(-inp));
+  }
 };
 
 template <typename scalar_t>
 GLOBAL_INLINE
 void swish_bwd_func(scalar_t &grad_inp, const scalar_t &inp, const scalar_t &grad_out) {
-  const scalar_t sig = scalar_t(1.0) / (scalar_t(1.0) + exp(-inp));
-  const scalar_t grad = sig * (scalar_t(1.0) + inp * (scalar_t(1.0) - sig));
+  scalar_t grad;
+  if (inp < 0) {
+    const scalar_t e = exp(inp);
+    grad = (scalar_t(1.0) + inp / (scalar_t(1.0) + e)) * e / (scalar_t(1.0) + e);
+  } else {
+    const scalar_t e = exp(-inp);
+    grad = (scalar_t(1.0) + inp * e / (scalar_t(1.0) + e)) / (scalar_t(1.0) + e);
+  }
   grad_inp = grad_out * grad;
 };
 
